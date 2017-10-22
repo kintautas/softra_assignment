@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular-route.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular-resource.min.js"></script>
+	<style>
+			.error {
+				color: red;
+			}
+	</style>
+</head>
+<body>
+	<div  ng-app="myApp" ng-controller="myCtrl" class="container-fluid">
+		<div ng-switch="mode">
+  		<div ng-switch-when="search">
+			<input ng-change="change()" ng-model="$parent.keyword" type="text" class="form-control" placeholder="Search" aria-label="Search"/>
+			<table class="table table-dark">
+			  <thead>
+			    <tr>
+			      <th scope="col">Valst. numeris</th>
+			      <th scope="col">Numerio atvaizdas</th>
+			      <th scope="col">Savininkas</th>
+			      <th scope="col">Pasirinkti</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr ng-repeat="plate in results">
+			      <th scope="row">{{$index + 1}}</th>
+			      <td>{{plate.PlateNum}}</td>
+			      <td><img ng-src="/data/{{plate.ImageFile}}"/></td>
+			      <td>{{plate.Owner}}</td>
+			      <td><button type="button" class="btn btn-success" ng-click="edit($index)">Pasirinkti</button></td>
+			    </tr>
+			  </tbody>
+			</table>
+		</div>
+			<form ng-switch-when="edit" name="myForm" novalidate>
+				  <div class="form-group">
+				        <label for="inputPlateNumber">Plate Number</label>
+    					<input name="plate" type="text" class="form-control" id="inputPlateNumber" ng-model="editable.plate" required>
+    					<p class="error" ng-show="myForm.plate.$touched && myForm.plate.$invalid">The name is required.</p>
+    				</div>
+					<img ng-src="/data/{{editable.image}}" class="img-fluid"/>
+					<br/>
+    				<div class="form-group">
+    					<label for="inputOwner">Owner</label>
+    					<input type="text" class="form-control" id="inputOwner" ng-model="editable.owner">
+    				</div>
+    				<div class="form-group">
+    					<label for="inputDateFrom">Date from</label>
+    					<input ng-change="validateDate()" type="date" class="form-control" id="inputDateFrom" ng-model="editable.from">
+    					<label for="inputDateTo">Date to</label>
+    					<input ng-change="validateDate()" type="date" class="form-control" id="inputDateTo" ng-model="editable.to">
+    					<p class="error" ng-show="!dateValid">Starting date must be earlier then ending date</p>
+    				</div>
+    				<div class="form-group">
+    					<label for="inputDateTel" ng-pattern="mobileRegex">Phone number</label>
+    					<input ng-pattern="mobileRegex" name="phoneNumber" class="form-control" id="inputDateTel" ng-model="editable.num">
+    					<p class="error" ng-show="myForm.phoneNumber.$touched && myForm.phoneNumber.$invalid">Phone number is incorrect</p>
+    				</div>
+				  <button type="submit" class="btn btn-primary" ng-click="valid(myForm.plate.$valid, myForm.phoneNumber.$valid || !myForm.phoneNumber.$dirty)">Next</button>
+				</form>
+			<div ng-switch-when="view">
+				<p>Registracijos numeris: {{editable.plate}}</p>
+				<p>Numerio paveikslelis: <img ng-src="/data/{{editable.image}}" class="img-fluid"/></p>
+				<p>Savininkas: {{editable.owner}}</p>
+				<p>Data nuo: {{editable.from}}</p>
+				<p>Data iki: {{editable.to}}</p>
+				<p>Telefono numeris: {{editable.num}}</p>
+				<button ng-click="back()" type="button" class="btn btn-secondary">Back to search</button>
+				<button ng-click="save()" type="button" class="btn btn-success">Save</button>
+			</div>
+
+		</div>
+
+	</div>
+
+	<script>
+		var app = angular.module('myApp',[]);
+		app.controller('myCtrl', function($scope,$http) {
+			$scope.mobileRegex = /(\+370)\d{8}$/g; 
+			$scope.mode = "search";
+			$scope.plates = [];
+			$scope.results = [];
+			$scope.editable = {};
+			$scope.dateValid = true;
+			$scope.change = function() {
+				if ($scope.keyword === "") $scope.results = []
+				else $scope.results = $scope.plates.filter(function(item){
+        			return item.PlateNum.startsWith($scope.keyword.toUpperCase());
+        		});
+
+			}
+			$scope.edit = function(index) {
+				$scope.mode = "edit";
+				$scope.editable.ID = $scope.results[index].ID;
+				$scope.editable.plate = $scope.results[index].PlateNum;
+				$scope.editable.image = $scope.results[index].ImageFile;
+				$scope.editable.owner = $scope.results[index].Owner;
+				$scope.editable.from = new Date($scope.results[index].ValidFrom);
+				$scope.editable.to = new Date($scope.results[index].ValidTo);
+				$scope.editable.num = $scope.results[index].PhoneNum;
+			}
+
+			$scope.validateDate = function() {
+				if ($scope.editable.from < $scope.editable.to) {
+					$scope.dateValid = true;
+				} else $scope.dateValid = false;
+			}
+
+			$scope.valid = function(plate, phone) {
+				if (plate && phone && $scope.dateValid) $scope.mode="view";
+				else alert('Form data is invalid')
+			}
+
+			$scope.back = function() {
+				$scope.keyword = "";
+				$scope.mode = 'search';
+			}
+
+			$scope.save = function() {
+					for (var i = 0; i < $scope.plates.length; i++) {
+			   			if ($scope.plates[i].ID === $scope.editable.ID) {
+			   				$scope.plates[i].PlateNum = $scope.editable.plate;
+							$scope.plates[i].Owner = $scope.editable.owner;
+							$scope.plates[i].validFrom = $scope.editable.from;
+							$scope.plates[i].ValidTo = $scope.editable.to;
+							$scope.plates[i].PhoneNum = $scope.editable.num;
+							alert('Data was saved');
+			   			}
+			   		}
+
+			}
+
+
+
+			
+		    $http.get('data/licplates.json').then(function(data) {
+			   $scope.plates = data.data;
+			   for (var i = 0; i < $scope.plates.length; i++) {
+			   		$scope.plates[i].ID = i;
+			   }
+			});
+
+		});
+	</script>
+
+</body>
+</html>

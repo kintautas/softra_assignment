@@ -1,0 +1,52 @@
+[
+	{
+		"PlateNum": "KBN700",
+		"ImageFile": "licplate1.jpg",
+		"Owner": "Softra 1",
+		"ValidFrom": "2017-10-01T00:00:00.0000000",
+		"ValidTo": "2017-10-21T00:00:00.0000000",
+		"PhoneNum": "+37012345678"
+	}, {
+		"PlateNum": "FCB378",
+		"ImageFile": "licplate2.jpg",
+		"Owner": "Softra 2",
+		"ValidFrom": "2017-10-02T00:00:00.0000000",
+		"ValidTo": "2017-10-22T00:00:00.0000000",
+		"PhoneNum": ""
+	}, {
+		"PlateNum": "TVN842",
+		"ImageFile": "licplate3.jpg",
+		"Owner": "Softra 3",
+		"ValidFrom": "2017-10-03T00:00:00.0000000",
+		"ValidTo": "2017-10-23T00:00:00.0000000",
+		"PhoneNum": ""
+	}, {
+		"PlateNum": "GJA560",
+		"ImageFile": "licplate4.jpg",
+		"Owner": "Softra 4",
+		"ValidFrom": "2017-10-04T00:00:00.0000000",
+		"ValidTo": "2017-10-24T00:00:00.0000000",
+		"PhoneNum": ""
+	}, {
+		"PlateNum": "GZG341",
+		"ImageFile": "licplate5.jpg",
+		"Owner": "Softra 5",
+		"ValidFrom": "2017-10-05T00:00:00.0000000",
+		"ValidTo": "2017-10-25T00:00:00.0000000",
+		"PhoneNum": ""
+	}, {
+		"PlateNum": "JDE124",
+		"ImageFile": "licplate6.jpg",
+		"Owner": "Softra 6",
+		"ValidFrom": "2017-10-06T00:00:00.0000000",
+		"ValidTo": "2017-10-26T00:00:00.0000000",
+		"PhoneNum": ""
+	}, {
+		"PlateNum": "HUA634",
+		"ImageFile": "licplate7.jpg",
+		"Owner": "Softra 7",
+		"ValidFrom": "2017-10-07T00:00:00.0000000",
+		"ValidTo": "2017-10-27T00:00:00.0000000",
+		"PhoneNum": ""
+	}
+]
